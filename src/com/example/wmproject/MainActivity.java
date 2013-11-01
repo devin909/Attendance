@@ -1,24 +1,13 @@
 package com.example.wmproject;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONObject;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 
 import android.R.menu;
 import android.os.AsyncTask;
@@ -36,12 +25,16 @@ import android.widget.Toast;
 public class MainActivity extends Activity {
 	private EditText username;
     private EditText password;
-    private static String url_login = "http://plato.cs.virginia.edu/~jy4ny/attendance/users/login";
-    private ArrayList<Events> values;
+    private static String url_login = "http://plato.cs.virginia.edu/~jy4ny/attendance/users/api_login";
+    //private ArrayList<Events> values;
     private String user_name;
     private String pass_word;
     private ArrayAdapter<Events> adapter;
-    private List<NameValuePair> params=new ArrayList<NameValuePair>();
+    private JSONParser parser=new JSONParser();
+    private boolean logSuccess=false;
+    private String user_id="-1";
+    
+    private List<NameValuePair> parameters=new ArrayList<NameValuePair>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,11 +47,11 @@ public class MainActivity extends Activity {
 
                 user_name = username.getText().toString();
                 pass_word = password.getText().toString();
-                //params.add(new BasicNameValuePair("username",user_name));
-                //params.add(new BasicNameValuePair("password",pass_word));
+                parameters.add(new BasicNameValuePair("username",user_name));
+                parameters.add(new BasicNameValuePair("password",pass_word));
                 //JSONObject json = jsonParser.makeHttpRequest(url_login,"POST", params);
                 new login().execute();
-
+                
 
             }
         });
@@ -71,7 +64,11 @@ public class MainActivity extends Activity {
 		return true;
 		
 	}
-	
+	public void startEventsList(){
+		Intent intent = new Intent(this, EventListActivity.class);
+		intent.putExtra("user_id", user_id);
+		startActivity(intent);
+	}
 
 	// The definition of our task class
 	private class login extends AsyncTask<String, Integer, String> {
@@ -83,25 +80,31 @@ public class MainActivity extends Activity {
 		protected String doInBackground(String... params) {
 			
 			try {
-
-				String webJSON = getJSONfromURL(url_login+"?username="+user_name+"&password="+pass_word);
+				JSONObject jobj = parser.makeHttpRequest(url_login, "POST", parameters);
+				//String webJSON = getJSONfromURL(url_login+"?username="+user_name+"&password="+pass_word);
 				//Log.d("JSON", webJSON);
 				Gson gson = new Gson();
-				JsonParser parser = new JsonParser();
-				JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
-
-				for (JsonElement obj : Jarray) {
-					Events evt = gson.fromJson(obj, Events.class);
-					Log.d("EVENTS", evt.toString());
-					levt.add(evt);
+				JSONObject login;
+				if (((String)jobj.get("status")).equals("SUCCESS")){
+					login =(JSONObject) jobj.get("data");
+					user_id=(String)login.get("user_id");
+					logSuccess=true;
 				}
+				//JsonParser parser = new JsonParser();
+				//JsonArray Jarray = parser.parse(webJSON).getAsJsonArray();
+
+				//for (JsonElement obj : Jarray) {
+				//	Events evt = gson.fromJson(obj, Events.class);
+				//	Log.d("EVENTS", evt.toString());
+				//	levt.add(evt);
+				//}
 
 			} catch (Exception e) {
-				Log.e("LousList", "JSONPARSE:" + e.toString());
+				Log.e("Login", "JSONPARSE:" + e.toString());
 			}
 
-			values.clear();
-			values.addAll(lcs);
+			//values.clear();
+			//values.addAll(lcs);
 
 			return "Done!";
 		}
@@ -115,7 +118,11 @@ public class MainActivity extends Activity {
 		protected void onPostExecute(String result) {
 			// tells the adapter that the underlying data has changed and it
 			// needs to update the view
-			adapter.notifyDataSetChanged();
+			//adapter.notifyDataSetChanged();
+			if (logSuccess){
+            	logSuccess=false;
+            	startEventsList();
+            }
 		}
 	}
 	
