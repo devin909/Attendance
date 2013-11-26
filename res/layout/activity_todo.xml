@@ -6,10 +6,10 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".EventListActivity" >
+    tools:context=".TodoActivity" >
 
     <GridView
-	    android:id="@+id/attendance_list"
+	    android:id="@+id/todolist"
 	    android:layout_width="fill_parent"
 	    android:layout_height="400dp"
 	    android:layout_alignParentLeft="true"
@@ -19,13 +19,14 @@
 	    android:numColumns="auto_fit"
 	    android:stretchMode="columnWidth" >
 	</GridView>
-	<Button
-    android:id="@+id/todostart"
+    
+    <Button
+    android:id="@+id/start"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
     android:layout_centerHorizontal="true"
-    android:text="To Do List"
+    android:text="New"
     android:onClick="startPlaying" />
 
 </RelativeLayout>

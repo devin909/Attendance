@@ -5,10 +5,9 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.example.wmproject.MainActivity.login;
+import com.example.wmproject.EventListActivity.loadEvents;
 import com.google.gson.Gson;
 
 import android.os.AsyncTask;
@@ -18,63 +17,42 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.Menu;
-import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.TextView;
 
-public class EventListActivity extends Activity {
-	private String user_id="-1";
+public class TodoActivity extends Activity {
 	private JSONParser parser=new JSONParser();
 	private List<NameValuePair> parameters=new ArrayList<NameValuePair>();
-	private static String url_list = "http://plato.cs.virginia.edu/~jy4ny/attendance/events/api_list";
 	private ArrayList<Events> evts= new ArrayList<Events>();
 	GridView gridView;
 	Context currentContext;
 	Button todostart;
-	//private TextView event1;
-	//private TextView event2;
+	String useful;
+	private static String url_list_view1 = "http://devintodolist.appspot.com/todo/";
+	private static String url_list_view2 = "/view";
+	private static String url_list_add1 = "http://devintodolist.appspot.com/todo/";
+	private static String url_list_add2 = "/add";
+	String user_id;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_todo);
 		Intent myIntent= getIntent();
-		setContentView(R.layout.activity_event_list);
-		gridView = (GridView) findViewById(R.id.attendance_list);
-		//gridView.setAdapter(new ImageAdapter(this, gigdog.getStationNames(), gigdog.getStationImageURLs()));
+		gridView = (GridView) findViewById(R.id.todolist);
 		user_id = myIntent.getStringExtra("user_id");
-		//TextView text = (TextView) findViewById(R.id.hello);
-		//text.setText(user_id);
 		currentContext=this;
-		todostart= (Button)this.findViewById(R.id.todostart);
-		
-		parameters.add(new BasicNameValuePair("user_id",user_id));
-		new loadEvents().execute();
-		todostart.setOnClickListener(new View.OnClickListener() {           
-            public void onClick(View v) {              
-
-                //parameters.add(new BasicNameValuePair("username",user_id));
-                //JSONObject json = jsonParser.makeHttpRequest(url_login,"POST", params);
-                startTodo();
-
-            }
-        });
-		
-		
-	}
-	public void startTodo(){
-		Intent intent = new Intent(this, TodoActivity.class);
-		intent.putExtra("user_id", user_id);
-		startActivity(intent);
+		new loadTodos().execute();
+		//parameters.add(new BasicNameValuePair("user_id",user_id));
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.event_list, menu);
+		getMenuInflater().inflate(R.menu.todo, menu);
 		return true;
 	}
-	public class loadEvents extends AsyncTask<String, Integer, String> {
+	private class loadTodos extends AsyncTask<String, Integer, String> {
 		@Override
 		protected void onPreExecute() {
 		}
@@ -83,21 +61,24 @@ public class EventListActivity extends Activity {
 		protected String doInBackground(String... params) {
 			
 			try {
-				JSONObject jobj = parser.makeHttpRequest(url_list, "GET", parameters);
+				JSONObject jobj = parser.makeHttpRequest(url_list_view1+"1"+url_list_view2, "GET", parameters);
 				//String webJSON = getJSONfromURL(url_login+"?username="+user_name+"&password="+pass_word);
 				//Log.d("JSON", webJSON);
 				Gson gson = new Gson();
 				int numEvent;
 				JSONObject jsonEvts;
-				numEvent = jobj.getInt("eventFound");
-				for (int i = 0; i < numEvent; i++) {
-					jsonEvts = (JSONObject) jobj.get("" + i);
-					Events temp = new Events();
-					temp.setTitle((String) jsonEvts.get("title"));
-					temp.setDescription((String) jsonEvts.get("description"));
-					temp.setId((String) jsonEvts.get("id"));
-					evts.add(temp);
-				}
+				useful = (String) jobj.get("todoid");
+				useful= useful+ " " +(String) jobj.get("title") + " "+ (String) jobj.get("description");
+				
+//				numEvent = jobj.getInt("eventFound");
+//				for (int i = 0; i < numEvent; i++) {
+//					jsonEvts = (JSONObject) jobj.get("" + i);
+//					Events temp = new Events();
+//					temp.setTitle((String) jsonEvts.get("title"));
+//					temp.setDescription((String) jsonEvts.get("description"));
+//					temp.setId((String) jsonEvts.get("id"));
+//					evts.add(temp);
+//				}
 				
 
 				//JsonParser parser = new JsonParser();
@@ -127,9 +108,10 @@ public class EventListActivity extends Activity {
 		@Override
 		protected void onPostExecute(String result) {
 			ArrayList <String> evtnames= new ArrayList<String>();
-			for (int i=0; i<evts.size();i++){
-				evtnames.add(evts.get(i).getTitle());
-			}
+			evtnames.add(useful);
+//			for (int i=0; i<evts.size();i++){
+//				evtnames.add(evts.get(i).getTitle());
+//			}
 			gridView.setAdapter(new ImageAdapter(currentContext, evtnames, evtnames));
 			// tells the adapter that the underlying data has changed and it
 			// needs to update the view

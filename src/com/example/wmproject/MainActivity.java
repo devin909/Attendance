@@ -71,7 +71,7 @@ public class MainActivity extends Activity {
 	}
 
 	// The definition of our task class
-	private class login extends AsyncTask<String, Integer, String> {
+	public class login extends AsyncTask<String, Integer, String> {
 		@Override
 		protected void onPreExecute() {
 		}
