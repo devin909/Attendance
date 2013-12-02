@@ -56,13 +56,18 @@ public class MainActivity extends Activity {
             }
         });
 	}
-
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 		
+	}
+	public void startWeb3(){
+		Intent intent = new Intent(this, VoterListActivity.class);
+		//intent.putExtra("user_id", user_id);
+		startActivity(intent);
 	}
 	public void startEventsList(){
 		Intent intent = new Intent(this, EventListActivity.class);

@@ -33,6 +33,7 @@ public class EventListActivity extends Activity {
 	GridView gridView;
 	Context currentContext;
 	Button todostart;
+	Button voteliststart;
 	//private TextView event1;
 	//private TextView event2;
 	@Override
@@ -59,12 +60,26 @@ public class EventListActivity extends Activity {
 
             }
         });
+		voteliststart = (Button) this.findViewById(R.id.voteliststart);
+		voteliststart.setOnClickListener(new View.OnClickListener(){
+			public void onClick(View v) {              
+
+                //parameters.add(new BasicNameValuePair("username",user_id));
+                //JSONObject json = jsonParser.makeHttpRequest(url_login,"POST", params);
+                startVoteList();
+
+            }
+		});
 		
 		
 	}
 	public void startTodo(){
 		Intent intent = new Intent(this, TodoActivity.class);
 		intent.putExtra("user_id", user_id);
+		startActivity(intent);
+	}
+	public void startVoteList(){
+		Intent intent = new Intent(this, VoterListActivity.class);
 		startActivity(intent);
 	}
 

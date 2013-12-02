@@ -82,7 +82,21 @@ public class JSONParser {
 	    }
 	
 	    // try parse the string to a JSON object
+	    
 	    try {
+	    	if (json.charAt(0)=='['){
+	    		json=json.replace("[", "{\"entry0\":");
+	    		int ind= json.indexOf("},{", 0);
+	    		int count=1;
+	    		while (ind!=-1){
+	    			json=json.replaceFirst("[}][,][{]", "},\"entry"+count+"\":{");
+	    			ind=json.indexOf("},{",ind);
+	    			count++;
+	    		}
+	    		json=json.replace(']','}');
+	    		
+	    		
+	    	}
 	        myJSON = new JSONObject(json);
 	    } catch (JSONException e) {
 	        Log.e("JSON Parser", "Error parsing data " + e.toString());

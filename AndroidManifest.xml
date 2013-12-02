@@ -33,6 +33,18 @@
             android:name="com.example.wmproject.TodoActivity"
             android:label="@string/title_activity_todo" >
         </activity>
+        <activity
+            android:name="com.example.wmproject.IncidentActivity"
+            android:label="@string/title_activity_incident" >
+        </activity>
+        <activity
+            android:name="com.example.wmproject.VoterListActivity"
+            android:label="@string/title_activity_voter_list" >
+        </activity>
+        <activity
+            android:name="com.example.wmproject.VoteCreateActivity"
+            android:label="@string/title_activity_vote_create" >
+        </activity>
     </application>
 
 </manifest>
